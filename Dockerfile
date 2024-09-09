@@ -4,6 +4,6 @@ WORKDIR /app
 
 COPY target/chatroom-0.0.1-SNAPSHOT.jar /app/chatroom-0.0.1-SNAPSHOT.jar
 
-EXPOSE 8082
+EXPOSE 8083
 
 ENTRYPOINT ["java", "-jar", "/app/chatroom-0.0.1-SNAPSHOT.jar"]
