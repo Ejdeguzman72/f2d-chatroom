@@ -1,11 +1,39 @@
 package com.f2d.chatroom.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Entity
+@Table(name = "chat_message")
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@CrossOrigin
 public class ChatMessage {
 
+    long chatMessageId;
     String sender;
     String content;
-    String timestamp;
+    LocalDateTime sentDatetime;
+    ChatGroup chatGroup;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "chat_message_id")
+    public long getChatMessageId() {
+        return chatMessageId;
+    }
+
+    public void setChatMessageId(long chatMessageId) {
+        this.chatMessageId = chatMessageId;
+    }
+
+    @Column(name = "sender")
     public String getSender() {
         return sender;
     }
@@ -14,6 +42,7 @@ public class ChatMessage {
         this.sender = sender;
     }
 
+    @Column(name = "content")
     public String getContent() {
         return content;
     }
@@ -22,20 +51,22 @@ public class ChatMessage {
         this.content = content;
     }
 
-    public String getTimestamp() {
-        return timestamp;
+    @Column(name = "sent_datetime")
+    public LocalDateTime getSentDatetime() {
+        return sentDatetime;
     }
 
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
+    public void setSentDatetime(LocalDateTime sentDatetime) {
+        this.sentDatetime = sentDatetime;
     }
 
-    public ChatMessage() {
+    @ManyToOne
+    @JoinColumn(name = "chat_group_id")
+    public ChatGroup getChatGroup() {
+        return chatGroup;
     }
 
-    public ChatMessage(String sender, String content, String timestamp) {
-        this.sender = sender;
-        this.content = content;
-        this.timestamp = timestamp;
+    public void setChatGroup(ChatGroup chatGroup) {
+        this.chatGroup = chatGroup;
     }
 }
