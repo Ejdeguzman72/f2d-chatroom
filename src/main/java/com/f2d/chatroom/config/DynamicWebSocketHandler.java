@@ -13,13 +13,10 @@ import java.util.Set;
 
 @Component
 public class DynamicWebSocketHandler {
-
-    // Map to store WebSocket handlers for different channels
-    private final Map<String, WebSocketHandler> channelHandlers = new HashMap<>();
-
+    public Map<String, WebSocketHandler> channelHandlers = new HashMap<>();
     public DynamicWebSocketHandler() {
         // Initialize dynamic handlers for channels
-        channelHandlers.put("default", new MyWebSocketHandler("default"));
+//        channelHandlers.put("default", new MyWebSocketHandler("default"));
         // You can add more channels dynamically here
     }
 
