@@ -141,9 +141,7 @@ public class F2DChatMessageService {
         ChatMessageSearchResponse response = new ChatMessageSearchResponse();
         ChatMessage chatMessage = retrieveChatMessageById(chatMessageId).getChatMessage();
         if (Objects.nonNull(chatMessage)) {
-            response.setChatMessage(chatMessage);
             chatMessageRepository.delete(chatMessage);
-
             response.setMessage(AppConstants.DELETE_CHAT_MESSAGE_SUCCESS_MSG);
             response.setSuccess(false);
         } else {

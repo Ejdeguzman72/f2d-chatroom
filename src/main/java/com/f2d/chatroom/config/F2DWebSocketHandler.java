@@ -5,6 +5,11 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 public class F2DWebSocketHandler extends TextWebSocketHandler {
+    String channel;
+
+    public F2DWebSocketHandler(String channel) {
+        this.channel = channel;
+    }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
