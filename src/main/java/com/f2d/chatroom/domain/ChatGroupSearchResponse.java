@@ -11,7 +11,7 @@ public class ChatGroupSearchResponse {
 
     ChatGroup chatGroup;
     String message;
-    boolean content;
+    boolean isSuccess;
 
     public ChatGroup getChatGroup() {
         return chatGroup;
@@ -29,11 +29,11 @@ public class ChatGroupSearchResponse {
         this.message = message;
     }
 
-    public boolean isContent() {
-        return content;
+    public boolean isSuccess() {
+        return isSuccess;
     }
 
-    public void setContent(boolean content) {
-        this.content = content;
+    public void setSuccess(boolean success) {
+        isSuccess = success;
     }
 }
