@@ -1,10 +1,14 @@
 package com.f2d.chatroom.service;
 
 import com.f2d.chatroom.domain.*;
+import com.f2d.chatroom.feign.F2DGroupBuilderFeignClient;
 import com.f2d.chatroom.repository.F2DChatGroupRepository;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -17,6 +21,8 @@ public class F2DChatGroupService {
 
     @Autowired
     private F2DChatGroupRepository chatGroupRepository;
+    @Autowired
+    private F2DGroupBuilderFeignClient f2dGroupBuilderClient;
     private static final Logger LOGGER = LoggerFactory.getLogger(F2DChatGroupService.class);
 
     public ChatGroupListResponse retrieveAllChatGroupInfo() {
@@ -48,7 +54,20 @@ public class F2DChatGroupService {
 
         return response;
     }
+    public F2DGroupSearchResponse retrieveF2DGroup(UUID groupId) {
+        ResponseEntity<F2DGroupSearchResponse> response = null;
+        try {
+            response = f2dGroupBuilderClient.getGroupById(groupId);
+            if (response.getStatusCode() == HttpStatusCode.valueOf(HttpStatus.SC_OK)) {
+                LOGGER.info("Retrieving f2d-group with ID: " + groupId);
+                return response.getBody();
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error hitting f2d-group-builder service: " + e.getMessage());
+        }
 
+        return response.getBody();
+    }
     public ChatGroupAddUpdateResponse createChatGroup(ChatGroupAddUpdateRequest request) {
         ChatGroupAddUpdateResponse response = new ChatGroupAddUpdateResponse();
 
@@ -61,7 +80,7 @@ public class F2DChatGroupService {
 
         // Save the chat group entity
         chatGroup = chatGroupRepository.save(chatGroup);
-
+        F2DGroupSearchResponse f2DGroupSearchResponse = f2dGroupBuilderClient.getGroupById(request.getChatGroupId()).getBody();
         // Check if the chat group was saved successfully
         if (Objects.nonNull(chatGroup)) {
             response.setChatGroup(chatGroup);

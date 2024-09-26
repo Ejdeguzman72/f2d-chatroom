@@ -1,10 +1,16 @@
 package com.f2d.chatroom.service;
 
 import com.f2d.chatroom.domain.*;
+import com.f2d.chatroom.feign.F2DGroupBuilderFeignClient;
+import com.f2d.chatroom.repository.F2DChatGroupRepository;
 import com.f2d.chatroom.repository.F2DChatMessageRepository;
+import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.ObjectError;
 
 import java.util.List;
 import java.util.Objects;
@@ -12,9 +18,12 @@ import java.util.UUID;
 
 @Service
 public class F2DChatMessageService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(F2DChatMessageService.class);
 
     @Autowired
     private F2DChatMessageRepository chatMessageRepository;
+    @Autowired
+    private F2DChatGroupRepository chatGroupRepository;
 
     public ChatMessageListResponse retrieveAllChatMessages() {
         ChatMessageListResponse response = new ChatMessageListResponse();
@@ -71,15 +80,17 @@ public class F2DChatMessageService {
             chatMessage.setContent(request.getContent());
             chatMessage.setSentDatetime(request.getSentDatetime());
 
-//            // Fetch the ChatGroup entity based on the chatGroupId in the request
-//            Optional<ChatGroup> chatGroupOpt = chatGroupRepository.findById(request.getChatGroupId());
-//            if (chatGroupOpt.isPresent()) {
-//                chatMessage.setChatGroup(chatGroupOpt.get());
-//            } else {
-//                response.setMessage(AppConstants.CHAT_GROUP_NOT_FOUND_MSG);
-//                response.setSuccess(false);
-//                return response; // Exit early if chat group is not found
-//            }
+            // Fetch the ChatGroup entity based on the chatGroupId in the request
+            ChatGroup chatGroup = chatGroupRepository.findById(request.getChatGroupId()).orElseGet(ChatGroup::new);
+
+            if (Objects.nonNull(chatGroup)) {
+                chatMessage.setChatGroup(chatGroup);
+            } else {
+                // Handle case when chat group is not found
+                response.setMessage("Chat group not found for ID: " + request.getChatGroupId());
+                response.setSuccess(false);
+                return response;
+            }
 
             // Save the chat message to the database
             ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);

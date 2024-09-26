@@ -12,7 +12,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "chat_message")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @CrossOrigin
 public class ChatMessage {
 

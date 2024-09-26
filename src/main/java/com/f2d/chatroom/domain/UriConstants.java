@@ -12,4 +12,5 @@ public class UriConstants {
     public static final String CREATE_CHAT_MESSAGE_URI = "/chat-messages/create";
     public static final String UPDATE_CHAT_MESSAGE_URI = "/chat-messages/update/{chatMessageId}";
     public static final String DELETE_CHAT_MESSAGE_URI = "/chat-messages/delete/{chatMessageId}";
+    public static final String GET_F2D_GROUP_BY_ID_RELATIVE_PATH = "/groups/search/id/{groupId}";
 }

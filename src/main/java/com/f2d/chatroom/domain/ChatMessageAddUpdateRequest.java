@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -14,7 +15,7 @@ public class ChatMessageAddUpdateRequest {
     private String sender;
     private String content;
     private LocalDateTime sentDatetime;
-    private Long chatGroupId;
+    private UUID chatGroupId;
 
     // Getters and Setters
 
@@ -42,11 +43,11 @@ public class ChatMessageAddUpdateRequest {
         this.sentDatetime = sentDatetime;
     }
 
-    public Long getChatGroupId() {
+    public UUID getChatGroupId() {
         return chatGroupId;
     }
 
-    public void setChatGroupId(Long chatGroupId) {
+    public void setChatGroupId(UUID chatGroupId) {
         this.chatGroupId = chatGroupId;
     }
 }
