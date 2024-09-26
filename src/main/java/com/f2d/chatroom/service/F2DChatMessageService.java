@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -78,7 +80,7 @@ public class F2DChatMessageService {
             // Map fields from request DTO to entity
             chatMessage.setSender(request.getSender());
             chatMessage.setContent(request.getContent());
-            chatMessage.setSentDatetime(request.getSentDatetime());
+            chatMessage.setSentDatetime(LocalDateTime.now());
 
             // Fetch the ChatGroup entity based on the chatGroupId in the request
             ChatGroup chatGroup = chatGroupRepository.findById(request.getChatGroupId()).orElseGet(ChatGroup::new);
@@ -111,10 +113,16 @@ public class F2DChatMessageService {
     public ChatMessageAddUpdateResponse updateChatMessage(ChatMessageAddUpdateRequest request, long chatMessageId) {
         ChatMessageAddUpdateResponse response = new ChatMessageAddUpdateResponse();
         ChatMessage chatMessage = retrieveChatMessageById(chatMessageId).getChatMessage();
+        ChatGroup chatGroup = new ChatGroup();
 
         if (Objects.nonNull(chatMessage)) {
             chatMessage.setContent(request.getContent());
             chatMessage.setSender(request.getSender());
+
+            if (request.getChatGroupId() != null) {
+                chatGroup = chatGroupRepository.findById(request.getChatGroupId()).orElseGet(ChatGroup::new);
+                chatMessage.setChatGroup(chatGroup);
+            }
 
             ChatMessage updatedChatMessage = chatMessageRepository.save(chatMessage);
             if (Objects.nonNull(updatedChatMessage)) {
