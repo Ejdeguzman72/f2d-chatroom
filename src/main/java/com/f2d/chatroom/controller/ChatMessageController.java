@@ -25,8 +25,8 @@ public class ChatMessageController {
     }
 
     @GetMapping(UriConstants.GET_ALL_CHAT_MESSAGES_BY_GROUP_URI)
-    public ResponseEntity<ChatMessageListResponse> retrieveChatMessagesByGroup(@RequestBody ChatGroup chatGroup) {
-        ChatMessageListResponse response = chatMessageService.retrieveChatMessagesByGroup(chatGroup);
+    public ResponseEntity<ChatMessageListResponse> retrieveChatMessagesByGroup(@PathVariable UUID chatGroupId) {
+        ChatMessageListResponse response = chatMessageService.retrieveChatMessagesByGroup(chatGroupId);
         return ResponseEntity.ok(response);
     }
 

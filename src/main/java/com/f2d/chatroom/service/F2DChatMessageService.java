@@ -42,10 +42,10 @@ public class F2DChatMessageService {
         return response;
     }
 
-    public ChatMessageListResponse retrieveChatMessagesByGroup(ChatGroup chatGroup) {
+    public ChatMessageListResponse retrieveChatMessagesByGroup(UUID chatGroupId) {
         ChatMessageListResponse response = new ChatMessageListResponse();
         try {
-            List<ChatMessage> list = chatMessageRepository.findChatMessagesByChatGroup(chatGroup);
+            List<ChatMessage> list = chatMessageRepository.findChatMessagesByChatGroup_ChatGroupId(chatGroupId);
             response.setList(list);
             response.setMessage(AppConstants.GET_ALL_CHAT_MESSAGES_SUCCESS_MSG);
             response.setSuccess(true);
