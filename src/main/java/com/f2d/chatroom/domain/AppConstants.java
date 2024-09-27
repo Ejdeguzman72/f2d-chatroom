@@ -19,7 +19,7 @@ public class AppConstants {
     public static final String CREATE_UPDATE_CHAT_MESSAGE_FAILURE_MSG = "CREATE/UPDATE CHAT MESSAGE FAILURE";
     public static final String DELETE_CHAT_MESSAGE_SUCCESS_MSG = "DELETE CHAT MESSAGE SUCCESS";
     public static final String DELETE_CHAT_MESSAGE_FAILURE_MSG = "DELETE CHAT MESSAGE FAILURE";
-    public static final String LOCALHOST = "http://localhost:8083";
+    public static final String LOCALHOST = "http://localhost:8081";
     public static final String F2D_GROUP_BUILDER = "F2D-GROUP-BUILDER";
     public static final String GROUP_ID = "groupId";
     public static final String F2D_GROUP_BUILDER_CALL_FAILURE = "call to f2d-group-builder service failed";

@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.attribute.GroupPrincipal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -71,18 +72,40 @@ public class F2DChatGroupService {
     public ChatGroupAddUpdateResponse createChatGroup(ChatGroupAddUpdateRequest request) {
         ChatGroupAddUpdateResponse response = new ChatGroupAddUpdateResponse();
 
-        // Mapping the request to the entity
+        // Mapping the request to the ChatGroup entity
         ChatGroup chatGroup = new ChatGroup();
         chatGroup.setName(request.getName());
         chatGroup.setCreateDate(LocalDate.now());
         chatGroup.setLastUpdateTime(LocalDate.now());
-        // Set other fields from the request if needed
+        chatGroup.setChatGroupId(request.getChatGroupId());
 
-        // Save the chat group entity
-        chatGroup = chatGroupRepository.save(chatGroup);
-        F2DGroupSearchResponse f2DGroupSearchResponse = f2dGroupBuilderClient.getGroupById(request.getChatGroupId()).getBody();
+        LOGGER.info("request groupId: " + request.getGroupId());
+
+        try {
+            // Retrieve the F2DGroup by groupId from the request and set it to chatGroup
+//            ResponseEntity<F2DGroupSearchResponse> f2dGroupResponse = f2dGroupBuilderClient.getGroupById(request.getGroupId());
+//
+//            if (f2dGroupResponse.getStatusCode() == HttpStatusCode.valueOf(HttpStatus.SC_OK)) {
+//                F2DGroup f2dGroup = f2dGroupResponse.getBody().getF2dGroup();
+//                chatGroup.setF2dGroup(f2dGroup); // Set the F2DGroup to the ChatGroup
+//            } else {
+//                LOGGER.error("Failed to fetch F2DGroup with ID: " + request.getGroupId());
+//                response.setMessage("Failed to fetch F2DGroup.");
+//                response.setSuccess(false);
+//                return response;
+//            }
+
+            // Save the chat group entity
+            chatGroup = chatGroupRepository.save(chatGroup);
+        } catch (Exception e) {
+            LOGGER.error("Error while fetching or saving the F2DGroup: " + e.getMessage());
+            response.setMessage("An error occurred while fetching or saving the F2DGroup.");
+            response.setSuccess(false);
+            return response;
+        }
+
         // Check if the chat group was saved successfully
-        if (Objects.nonNull(chatGroup)) {
+        if (Objects.nonNull(chatGroup.getChatGroupId())) {
             response.setChatGroup(chatGroup);
             response.setMessage(AppConstants.CREATE_CHAT_GROUP_SUCCESS_MSG);
             response.setSuccess(true);
@@ -94,13 +117,15 @@ public class F2DChatGroupService {
         return response;
     }
 
+
     public ChatGroupAddUpdateResponse updateChatGroup(ChatGroupAddUpdateRequest request, UUID chatMessageId) {
         ChatGroupAddUpdateResponse response = new ChatGroupAddUpdateResponse();
         ChatGroup chatMessage = retrieveChatGroupById(chatMessageId).getChatGroup();
 
         if (Objects.nonNull(chatMessage)) {
             chatMessage.setChatGroupId(request.getChatGroupId());
-            chatMessage.setF2dGroup(request.getF2dGroup());
+            ResponseEntity<F2DGroupSearchResponse> f2DGroup = f2dGroupBuilderClient.getGroupById(request.getGroupId());
+            chatMessage.setF2dGroup(f2DGroup.getBody().getF2dGroup());
             chatMessage.setName(request.getName());
             chatMessage.setCreateDate(request.getCreateDate());
             chatMessage.setLastUpdateTime(request.getLastUpdateTime());
