@@ -2,9 +2,7 @@ package com.f2d.chatroom.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.micrometer.common.lang.NonNull;
 import jakarta.persistence.*;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -14,16 +12,14 @@ import java.util.UUID;
 @Table(name = "f2d_group")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@CrossOrigin
 public class F2DGroup {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "group_id", columnDefinition = "UUID")
+    @Column(name = "group_id", columnDefinition = "UUID", updatable = false)
     private UUID groupId;
 
     @Column(name = "group_name")
-    @NonNull
     private String groupName;
 
     @Column(name = "group_type")
@@ -37,11 +33,10 @@ public class F2DGroup {
     @Column(name = "create_time")
     private LocalDate createTime;
 
-    @Column(name = "last_updatetime")
+    @Column(name = "last_update_time")
     private LocalDate lastUpdateTime;
 
     // Getters and Setters
-
     public UUID getGroupId() {
         return groupId;
     }

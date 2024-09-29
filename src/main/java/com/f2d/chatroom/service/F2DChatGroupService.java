@@ -58,7 +58,7 @@ public class F2DChatGroupService {
     public F2DGroupSearchResponse retrieveF2DGroup(UUID groupId) {
         ResponseEntity<F2DGroupSearchResponse> response = null;
         try {
-            response = f2dGroupBuilderClient.getGroupById(groupId);
+            response = f2dGroupBuilderClient.retrieveGroupById(groupId);
             if (response.getStatusCode() == HttpStatusCode.valueOf(HttpStatus.SC_OK)) {
                 LOGGER.info("Retrieving f2d-group with ID: " + groupId);
                 return response.getBody();
@@ -69,41 +69,61 @@ public class F2DChatGroupService {
 
         return response.getBody();
     }
+
     public ChatGroupAddUpdateResponse createChatGroup(ChatGroupAddUpdateRequest request) {
         ChatGroupAddUpdateResponse response = new ChatGroupAddUpdateResponse();
 
+        // Mapping the request to the ChatGroup entity
+        ChatGroup chatGroup = new ChatGroup();
+        chatGroup.setGroupName(request.getGroupName());
+        chatGroup.setCreateDate(LocalDate.now());
+        chatGroup.setLastUpdateTime(LocalDate.now());
+
+        // Retrieve the F2DGroup and check for null
+        F2DGroupSearchResponse f2dGroupSearchResponse = retrieveF2DGroup(request.getChatGroupId());
+        F2DGroup f2dGroup = f2dGroupSearchResponse.getF2dGroup();
+        LOGGER.info("f2dGroup: " + f2dGroup.toString());
+
+//        if (f2dGroup == null) {
+//            LOGGER.error("F2DGroup not found for chatGroupId: " + request.getChatGroupId());
+//            response.setMessage("F2DGroup not found.");
+//            response.setSuccess(false);
+//            return response;
+//        }
+//
+//        // Ensure that all required fields are set before saving
+//        if (f2dGroup.getGroupName() == null) {
+//            LOGGER.error("F2DGroup groupName cannot be null.");
+//            response.setMessage("F2DGroup groupName cannot be null.");
+//            response.setSuccess(false);
+//            return response;
+//        }
+
+        chatGroup.setF2dGroup(f2dGroup); // Set the managed F2DGroup
+
         try {
-            // Mapping the request to the ChatGroup entity
-            ChatGroup chatGroup = new ChatGroup();
-            chatGroup.setName(request.getName());
-            chatGroup.setCreateDate(LocalDate.now());
-            chatGroup.setLastUpdateTime(LocalDate.now());
-            ResponseEntity<F2DGroupSearchResponse> f2dGroupSearchResponse = f2dGroupBuilderClient.getGroupById(request.getGroupId());
-            if (f2dGroupSearchResponse.getStatusCode() == HttpStatusCode.valueOf(HttpStatus.SC_OK)) {
-                chatGroup.setF2dGroup(f2dGroupSearchResponse.getBody().getF2dGroup());
-            }
-
-
-            LOGGER.info("Successfully retrieved group for groupId: " + request.getGroupId());
-
             chatGroup = chatGroupRepository.save(chatGroup);
+
             // Check if the chat group was saved successfully
             if (Objects.nonNull(chatGroup.getChatGroupId())) {
                 response.setChatGroup(chatGroup);
                 response.setMessage(AppConstants.CREATE_CHAT_GROUP_SUCCESS_MSG);
                 response.setSuccess(true);
+                LOGGER.info("Successfully created chat group with ID: " + chatGroup.getChatGroupId());
             } else {
                 response.setMessage(AppConstants.CREATE_CHART_GROUP_FAILURE_MSG);
                 response.setSuccess(false);
             }
         } catch (Exception e) {
             LOGGER.error("Error occurred while creating chat group: ", e);
-            response.setMessage(AppConstants.CREATE_CHART_GROUP_FAILURE_MSG);
             response.setSuccess(false);
+            response.setMessage("An exception occurred while saving the chat group: " + e.getMessage());
         }
 
         return response;
     }
+
+
 
 
 
@@ -113,9 +133,9 @@ public class F2DChatGroupService {
 
         if (Objects.nonNull(chatMessage)) {
             chatMessage.setChatGroupId(request.getChatGroupId());
-            ResponseEntity<F2DGroupSearchResponse> f2DGroup = f2dGroupBuilderClient.getGroupById(request.getGroupId());
+            ResponseEntity<F2DGroupSearchResponse> f2DGroup = f2dGroupBuilderClient.retrieveGroupById(request.getGroupId());
             chatMessage.setF2dGroup(f2DGroup.getBody().getF2dGroup());
-            chatMessage.setName(request.getName());
+            chatMessage.setGroupName(request.getGroupName());
             chatMessage.setCreateDate(request.getCreateDate());
             chatMessage.setLastUpdateTime(request.getLastUpdateTime());
 

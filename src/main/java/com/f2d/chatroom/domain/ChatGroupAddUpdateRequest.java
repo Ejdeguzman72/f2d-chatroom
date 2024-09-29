@@ -12,7 +12,7 @@ import java.util.UUID;
 @CrossOrigin
 public class ChatGroupAddUpdateRequest {
     UUID chatGroupId;
-    String name;
+    String groupName;
     LocalDate createDate;
     LocalDate lastUpdateTime;
     UUID groupId;
@@ -25,12 +25,12 @@ public class ChatGroupAddUpdateRequest {
         this.chatGroupId = chatGroupId;
     }
 
-    public String getName() {
-        return name;
+    public String getGroupName() {
+        return groupName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 
     public LocalDate getCreateDate() {

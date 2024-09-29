@@ -2,6 +2,7 @@ package com.f2d.chatroom.controller;
 
 import com.f2d.chatroom.domain.*;
 import com.f2d.chatroom.service.F2DChatGroupService;
+import jakarta.ws.rs.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,11 @@ public class ChatGroupController {
     public ResponseEntity<ChatGroupAddUpdateResponse> createChatGroup(@RequestBody ChatGroupAddUpdateRequest request) {
         ChatGroupAddUpdateResponse response = f2dChatGroupService.createChatGroup(request);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping(UriConstants.GET_F2D_GROUP_BY_ID_RELATIVE_PATH)
+    public F2DGroupSearchResponse retrieveGroupById(@PathVariable UUID groupId) {
+        return f2dChatGroupService.retrieveF2DGroup(groupId);
     }
 
     @PutMapping(UriConstants.UPDATE_CHAT_GROUP_URI)
