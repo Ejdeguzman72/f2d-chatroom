@@ -34,10 +34,11 @@ public class ChatGroupController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping(UriConstants.GET_F2D_GROUP_BY_ID_RELATIVE_PATH)
-    public F2DGroupSearchResponse retrieveGroupById(@PathVariable UUID groupId) {
-        return f2dChatGroupService.retrieveF2DGroup(groupId);
-    }
+    // test controller
+//    @GetMapping(UriConstants.GET_F2D_GROUP_BY_ID_RELATIVE_PATH)
+//    public F2DGroupSearchResponse retrieveGroupById(@PathVariable UUID groupId) {
+//        return f2dChatGroupService.retrieveF2DGroup(groupId);
+//    }
 
     @PutMapping(UriConstants.UPDATE_CHAT_GROUP_URI)
     public ResponseEntity<ChatGroupAddUpdateResponse> updateChatGroup(@RequestBody ChatGroupAddUpdateRequest request, @PathVariable UUID chatGroupId) {

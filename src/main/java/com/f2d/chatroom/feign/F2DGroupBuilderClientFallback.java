@@ -17,4 +17,12 @@ public class F2DGroupBuilderClientFallback implements F2DGroupBuilderFeignClient
         response.setSuccess(false);
         return ResponseEntity.ok(response);
     }
+
+    @Override
+    public ResponseEntity<F2DGroupSearchResponse> retrieveGroupByGroupName(String groupName) {
+        F2DGroupSearchResponse response = new F2DGroupSearchResponse();
+        response.setMessage(AppConstants.F2D_GROUP_BUILDER_CALL_FAILURE);
+        response.setSuccess(false);
+        return ResponseEntity.ok(response);
+    }
 }
