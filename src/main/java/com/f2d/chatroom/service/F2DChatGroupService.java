@@ -81,28 +81,9 @@ public class F2DChatGroupService {
 
         LOGGER.info("request groupId: " + request.getGroupId());
 
-        try {
-            // Retrieve the F2DGroup by groupId from the request and set it to chatGroup
-//            ResponseEntity<F2DGroupSearchResponse> f2dGroupResponse = f2dGroupBuilderClient.getGroupById(request.getGroupId());
-//
-//            if (f2dGroupResponse.getStatusCode() == HttpStatusCode.valueOf(HttpStatus.SC_OK)) {
-//                F2DGroup f2dGroup = f2dGroupResponse.getBody().getF2dGroup();
-//                chatGroup.setF2dGroup(f2dGroup); // Set the F2DGroup to the ChatGroup
-//            } else {
-//                LOGGER.error("Failed to fetch F2DGroup with ID: " + request.getGroupId());
-//                response.setMessage("Failed to fetch F2DGroup.");
-//                response.setSuccess(false);
-//                return response;
-//            }
 
-            // Save the chat group entity
-            chatGroup = chatGroupRepository.save(chatGroup);
-        } catch (Exception e) {
-            LOGGER.error("Error while fetching or saving the F2DGroup: " + e.getMessage());
-            response.setMessage("An error occurred while fetching or saving the F2DGroup.");
-            response.setSuccess(false);
-            return response;
-        }
+         chatGroup = chatGroupRepository.save(chatGroup);
+
 
         // Check if the chat group was saved successfully
         if (Objects.nonNull(chatGroup.getChatGroupId())) {
