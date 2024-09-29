@@ -72,31 +72,39 @@ public class F2DChatGroupService {
     public ChatGroupAddUpdateResponse createChatGroup(ChatGroupAddUpdateRequest request) {
         ChatGroupAddUpdateResponse response = new ChatGroupAddUpdateResponse();
 
-        // Mapping the request to the ChatGroup entity
-        ChatGroup chatGroup = new ChatGroup();
-        chatGroup.setName(request.getName());
-        chatGroup.setCreateDate(LocalDate.now());
-        chatGroup.setLastUpdateTime(LocalDate.now());
-        chatGroup.setChatGroupId(request.getChatGroupId());
+        try {
+            // Mapping the request to the ChatGroup entity
+            ChatGroup chatGroup = new ChatGroup();
+            chatGroup.setName(request.getName());
+            chatGroup.setCreateDate(LocalDate.now());
+            chatGroup.setLastUpdateTime(LocalDate.now());
+            ResponseEntity<F2DGroupSearchResponse> f2dGroupSearchResponse = f2dGroupBuilderClient.getGroupById(request.getGroupId());
+            if (f2dGroupSearchResponse.getStatusCode() == HttpStatusCode.valueOf(HttpStatus.SC_OK)) {
+                chatGroup.setF2dGroup(f2dGroupSearchResponse.getBody().getF2dGroup());
+            }
 
-        LOGGER.info("request groupId: " + request.getGroupId());
 
+            LOGGER.info("Successfully retrieved group for groupId: " + request.getGroupId());
 
-         chatGroup = chatGroupRepository.save(chatGroup);
-
-
-        // Check if the chat group was saved successfully
-        if (Objects.nonNull(chatGroup.getChatGroupId())) {
-            response.setChatGroup(chatGroup);
-            response.setMessage(AppConstants.CREATE_CHAT_GROUP_SUCCESS_MSG);
-            response.setSuccess(true);
-        } else {
+            chatGroup = chatGroupRepository.save(chatGroup);
+            // Check if the chat group was saved successfully
+            if (Objects.nonNull(chatGroup.getChatGroupId())) {
+                response.setChatGroup(chatGroup);
+                response.setMessage(AppConstants.CREATE_CHAT_GROUP_SUCCESS_MSG);
+                response.setSuccess(true);
+            } else {
+                response.setMessage(AppConstants.CREATE_CHART_GROUP_FAILURE_MSG);
+                response.setSuccess(false);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error occurred while creating chat group: ", e);
             response.setMessage(AppConstants.CREATE_CHART_GROUP_FAILURE_MSG);
             response.setSuccess(false);
         }
 
         return response;
     }
+
 
 
     public ChatGroupAddUpdateResponse updateChatGroup(ChatGroupAddUpdateRequest request, UUID chatMessageId) {
