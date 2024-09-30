@@ -36,8 +36,8 @@ public class F2DGroup {
     @Column(name = "last_update_time")
     private LocalDate lastUpdateTime;
 
-    @OneToOne
-    @JoinColumn(name = "chatGroupId")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "chat_group_id", referencedColumnName = "chat_group_id")
     private ChatGroup chatGroup;
 
     public UUID getGroupId() {
