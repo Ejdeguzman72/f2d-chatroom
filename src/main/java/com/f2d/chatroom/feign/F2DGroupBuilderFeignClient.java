@@ -2,6 +2,7 @@ package com.f2d.chatroom.feign;
 
 import com.f2d.chatroom.config.FeignConfig;
 import com.f2d.chatroom.domain.AppConstants;
+import com.f2d.chatroom.domain.F2DGroupListResponse;
 import com.f2d.chatroom.domain.F2DGroupSearchResponse;
 import jakarta.ws.rs.Path;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -17,6 +18,8 @@ import java.util.UUID;
         fallback = F2DGroupBuilderClientFallback.class)
 public interface F2DGroupBuilderFeignClient {
 
+    @GetMapping("/groups/all")
+    ResponseEntity<F2DGroupListResponse> retrieveAllGroups();
     @GetMapping("/groups/search/id/{groupId}")
     ResponseEntity<F2DGroupSearchResponse> retrieveGroupById(@PathVariable("groupId") UUID groupId);
 

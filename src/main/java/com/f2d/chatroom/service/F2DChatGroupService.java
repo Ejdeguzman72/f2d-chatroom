@@ -162,4 +162,8 @@ public class F2DChatGroupService {
 
         return response;
     }
+
+//    public void deleteUnassociatedChatGroup(UUID f2dGroupId) {
+//        List<ChatGroup> f2dGroupIdList = f2dGroupBuilderClient.retrieveAllGroups().getBody().getList().stream().map(F2DGroup::getChatGroup).toList();
+//    }
 }

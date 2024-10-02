@@ -1,6 +1,7 @@
 package com.f2d.chatroom.feign;
 
 import com.f2d.chatroom.domain.AppConstants;
+import com.f2d.chatroom.domain.F2DGroupListResponse;
 import com.f2d.chatroom.domain.F2DGroupSearchResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,14 @@ import java.util.UUID;
 
 @Component
 public class F2DGroupBuilderClientFallback implements F2DGroupBuilderFeignClient {
+
+    @Override
+    public ResponseEntity<F2DGroupListResponse> retrieveAllGroups() {
+        F2DGroupListResponse response = new F2DGroupListResponse();
+        response.setMessage(AppConstants.F2D_GROUP_BUILDER_CALL_FAILURE);
+        response.setSuccess(false);
+        return ResponseEntity.ok(response);
+    }
 
     @Override
     public ResponseEntity<F2DGroupSearchResponse> retrieveGroupById(UUID groupId) {
