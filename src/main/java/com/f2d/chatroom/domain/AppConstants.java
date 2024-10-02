@@ -23,4 +23,5 @@ public class AppConstants {
     public static final String F2D_GROUP_BUILDER = "F2D-GROUP-BUILDER";
     public static final String GROUP_ID = "groupId";
     public static final String F2D_GROUP_BUILDER_CALL_FAILURE = "call to f2d-group-builder service failed";
+    public static final String DUPLICATE_ENTRY = "Duplicate entry";
 }

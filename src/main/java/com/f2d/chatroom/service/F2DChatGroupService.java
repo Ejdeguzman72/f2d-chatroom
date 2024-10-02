@@ -13,9 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.attribute.GroupPrincipal;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class F2DChatGroupService {
@@ -71,16 +69,37 @@ public class F2DChatGroupService {
         return response.getBody();
     }
 
+    public boolean checkForDuplicateChatGroupNames(String chatGroupName) {
+        List<String> chatGroupNameList = chatGroupRepository.findAll()
+                .stream()
+                .map(ChatGroup::getGroupName)
+                .toList();
+        Set<String> set = new HashSet<>();
+        for (String name : chatGroupNameList) {
+            if (chatGroupNameList.contains(name)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public ChatGroupAddUpdateResponse createChatGroup(ChatGroupAddUpdateRequest request) {
         ChatGroupAddUpdateResponse response = new ChatGroupAddUpdateResponse();
 
+
         try {
             ChatGroup chatGroup = new ChatGroup();
-            chatGroup.setGroupName(request.getGroupName());
-            chatGroup.setCreateDate(LocalDate.now());
-            chatGroup.setLastUpdateTime(LocalDate.now());
 
-            chatGroupRepository.save(chatGroup);
+            if (checkForDuplicateChatGroupNames(request.getGroupName())) {
+                response.setMessage(AppConstants.DUPLICATE_ENTRY);
+                response.setSuccess(false);
+            } else {
+                chatGroup.setGroupName(request.getGroupName());
+                chatGroup.setCreateDate(LocalDate.now());
+                chatGroup.setLastUpdateTime(LocalDate.now());
+                chatGroupRepository.save(chatGroup);
+            }
 
             if (Objects.nonNull(chatGroup)) {
                 response.setChatGroup(chatGroup);

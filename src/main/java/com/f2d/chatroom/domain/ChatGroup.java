@@ -21,7 +21,7 @@ public class ChatGroup {
     @Column(name = "chat_group_id", updatable = false)
     private UUID chatGroupId;
 
-    @Column(name = "group_name")
+    @Column(name = "group_name", unique = true)
     private String groupName;
 
     @Column(name = "create_date")
