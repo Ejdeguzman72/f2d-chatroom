@@ -27,11 +27,39 @@ public class F2DChatGroupService {
     public ChatGroupListResponse retrieveAllChatGroupInfo() {
         ChatGroupListResponse response = new ChatGroupListResponse();
         try {
+            // Retrieve all ChatGroup entities from the repository
             List<ChatGroup> list = chatGroupRepository.findAll();
-            response.setList(list);
+
+            // Retrieve all valid ChatGroup entities, filtering out null values
+            List<ChatGroup> validChatGroupList = f2dGroupBuilderClient.retrieveAllGroups()
+                    .getBody()
+                    .getList()
+                    .stream()
+                    .map(F2DGroup::getChatGroup)
+                    .filter(Objects::nonNull)  // Filter out null ChatGroups
+                    .toList();
+
+            LOGGER.info(validChatGroupList.toString());
+
+            // Map the valid ChatGroup entities to their UUIDs, ensuring no nulls are present
+            List<UUID> validChatGroupIdList = validChatGroupList.stream()
+                    .map(ChatGroup::getChatGroupId)
+                    .filter(Objects::nonNull)  // Filter out null UUIDs
+                    .toList();
+
+            LOGGER.info(validChatGroupIdList.toString());
+
+            // Filter the list of ChatGroups from the repository, keeping only valid ones
+            List<ChatGroup> result = list.stream()
+                    .filter(group -> validChatGroupIdList.contains(group.getChatGroupId()))
+                    .toList();
+
+            // Set the response with the valid ChatGroup list
+            response.setList(result);
             response.setMessage(AppConstants.GET_ALL_CHAT_GROUPS_SUCCESS_MSG);
             response.setSuccess(true);
         } catch (Exception e) {
+            LOGGER.error(e.getMessage());
             response.setMessage(AppConstants.GET_ALL_CHAT_GROUPS_FAILURE_MSG);
             response.setSuccess(false);
         }
