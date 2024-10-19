@@ -39,15 +39,11 @@ public class F2DChatGroupService {
                     .filter(Objects::nonNull)  // Filter out null ChatGroups
                     .toList();
 
-            LOGGER.info(validChatGroupList.toString());
-
             // Map the valid ChatGroup entities to their UUIDs, ensuring no nulls are present
             List<UUID> validChatGroupIdList = validChatGroupList.stream()
                     .map(ChatGroup::getChatGroupId)
                     .filter(Objects::nonNull)  // Filter out null UUIDs
                     .toList();
-
-            LOGGER.info(validChatGroupIdList.toString());
 
             // Filter the list of ChatGroups from the repository, keeping only valid ones
             List<ChatGroup> result = list.stream()
@@ -72,6 +68,7 @@ public class F2DChatGroupService {
         try {
             ChatGroup chatGroup = chatGroupRepository.findById(chatGroupId).orElseGet(ChatGroup::new);
             response.setChatGroup(chatGroup);
+            LOGGER.info("Retrieving chat group with ID: " + chatGroupId);
             response.setMessage(AppConstants.GET_CHAT_GROUP_BY_ID_SUCCESS_MSG);
             response.setSuccess(true);
         } catch (Exception e) {
