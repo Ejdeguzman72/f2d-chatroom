@@ -176,13 +176,15 @@ public class F2DChatGroupService {
         ChatGroupSearchResponse response = new ChatGroupSearchResponse();
         ChatGroup chatGroup = retrieveChatGroupById(chatGroupId).getChatGroup();
         if (Objects.nonNull(chatGroup)) {
-            chatGroupRepository.deleteById(chatGroupId);
-            response.setChatGroup(chatGroup);
-            response.setMessage(AppConstants.DELETE_CHAT_GROUP_SUCCESS_MSG);
-            response.setSuccess(true);
-        } else {
-            response.setMessage(AppConstants.DELETE_CHAT_GROUP_FAILURE_MSG);
-            response.setSuccess(false);
+            try {
+                chatGroupRepository.deleteById(chatGroupId);
+                response.setChatGroup(chatGroup);
+                response.setMessage(AppConstants.DELETE_CHAT_GROUP_SUCCESS_MSG);
+                response.setSuccess(true);
+            } catch (Exception e) {
+                response.setSuccess(false);
+                response.setMessage(AppConstants.DELETE_CHAT_GROUP_FAILURE_MSG + e.toString());
+            }
         }
 
         return response;
