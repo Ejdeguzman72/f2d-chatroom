@@ -54,6 +54,7 @@ public class DynamicWebSocketHandler {
     public void initializeHandlers() {
         Set<ChatGroup> set = retrieveChatGroupNames();
         for (ChatGroup cg : set) {
+            logger.info("Chat Group: " + cg);
             channelHandlers.put(cg.getGroupName(), new F2DWebSocketHandler(cg.getGroupName()));
         }
     }
