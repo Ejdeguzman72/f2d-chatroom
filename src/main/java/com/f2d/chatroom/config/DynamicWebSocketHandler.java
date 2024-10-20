@@ -38,6 +38,9 @@ public class DynamicWebSocketHandler {
         ChatGroupListResponse list;
         try {
             list = chatGroupService.retrieveAllChatGroupInfo();
+            for (ChatGroup x : list.getList()) {
+                logger.info(x.toString());
+            }
         } catch (Exception e) {
             logger.error("Failed to retrieve chat groups: {}", e.getMessage());
             return new HashSet<>();
