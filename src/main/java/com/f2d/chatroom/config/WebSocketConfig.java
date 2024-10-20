@@ -8,20 +8,9 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @Configuration
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
-
-    private final DynamicWebSocketHandler dynamicWebSocketHandler;
-
-    public WebSocketConfig(DynamicWebSocketHandler dynamicWebSocketHandler) {
-        this.dynamicWebSocketHandler = dynamicWebSocketHandler;
-    }
-
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        // Example for dynamic endpoints
-        for (String channel : dynamicWebSocketHandler.getChannels()) {
-            String endpoint = "/ws/" + channel;
-            registry.addHandler(dynamicWebSocketHandler.getHandlerForChannel(channel), endpoint)
-                    .setAllowedOrigins("*");
-        }
+        registry.addHandler(new ChatWebSocketHandler(), "/ws/general")
+                .setAllowedOrigins("*"); // Allow all origins for simplicity
     }
 }
