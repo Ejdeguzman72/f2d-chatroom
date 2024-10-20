@@ -30,9 +30,9 @@ public class DynamicWebSocketHandler {
     private F2DChatGroupService chatGroupService;
 
     @Autowired
-    private F2DChatMessageService chatMessageService;
+    private static F2DChatMessageService chatMessageService;
 
-    public Map<String, WebSocketHandler> channelHandlers = new ConcurrentHashMap<>();
+    public static Map<String, WebSocketHandler> channelHandlers = new ConcurrentHashMap<>();
 
     public Set<ChatGroup> retrieveChatGroupNames() {
         ChatGroupListResponse list;
@@ -69,7 +69,7 @@ public class DynamicWebSocketHandler {
         return channelHandlers.keySet();
     }
 
-    public class F2DWebSocketHandler extends TextWebSocketHandler {
+    public static class F2DWebSocketHandler extends TextWebSocketHandler {
         private String channel;
 
         public F2DWebSocketHandler(String channel) {
