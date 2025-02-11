@@ -39,15 +39,11 @@ public class F2DChatGroupService {
                     .filter(Objects::nonNull)  // Filter out null ChatGroups
                     .toList();
 
-            LOGGER.info(validChatGroupList.toString());
-
             // Map the valid ChatGroup entities to their UUIDs, ensuring no nulls are present
             List<UUID> validChatGroupIdList = validChatGroupList.stream()
                     .map(ChatGroup::getChatGroupId)
                     .filter(Objects::nonNull)  // Filter out null UUIDs
                     .toList();
-
-            LOGGER.info(validChatGroupIdList.toString());
 
             // Filter the list of ChatGroups from the repository, keeping only valid ones
             List<ChatGroup> result = list.stream()
@@ -55,7 +51,7 @@ public class F2DChatGroupService {
                     .toList();
 
             // Set the response with the valid ChatGroup list
-            response.setList(result);
+            response.setList(validChatGroupList);
             response.setMessage(AppConstants.GET_ALL_CHAT_GROUPS_SUCCESS_MSG);
             response.setSuccess(true);
         } catch (Exception e) {
@@ -72,6 +68,7 @@ public class F2DChatGroupService {
         try {
             ChatGroup chatGroup = chatGroupRepository.findById(chatGroupId).orElseGet(ChatGroup::new);
             response.setChatGroup(chatGroup);
+            LOGGER.info("Retrieving chat group with ID: " + chatGroupId);
             response.setMessage(AppConstants.GET_CHAT_GROUP_BY_ID_SUCCESS_MSG);
             response.setSuccess(true);
         } catch (Exception e) {
@@ -119,25 +116,21 @@ public class F2DChatGroupService {
         try {
             ChatGroup chatGroup = new ChatGroup();
 
+            ChatGroup subimtChatGroup = new ChatGroup();
             if (checkForDuplicateChatGroupNames(request.getGroupName())) {
                 response.setMessage(AppConstants.DUPLICATE_ENTRY);
                 response.setSuccess(false);
+                return response;
             } else {
                 chatGroup.setGroupName(request.getGroupName());
                 chatGroup.setCreateDate(LocalDate.now());
                 chatGroup.setLastUpdateTime(LocalDate.now());
-                chatGroupRepository.save(chatGroup);
+                subimtChatGroup = chatGroupRepository.save(chatGroup);
             }
-
-            if (Objects.nonNull(chatGroup)) {
-                response.setChatGroup(chatGroup);
+                response.setChatGroup(subimtChatGroup);
                 response.setMessage(AppConstants.CREATE_CHAT_GROUP_SUCCESS_MSG);
                 response.setSuccess(true);
-                LOGGER.info("Successfully created chat group with ID: " + chatGroup.getChatGroupId());
-            } else {
-                response.setMessage(AppConstants.CREATE_CHART_GROUP_FAILURE_MSG);
-                response.setSuccess(false);
-            }
+                LOGGER.info("Successfully created chat group with ID: " + chatGroup.getGroupName());
         } catch (Exception e) {
             LOGGER.error("Error occurred while creating chat group: ", e);
             response.setSuccess(false);
@@ -179,13 +172,15 @@ public class F2DChatGroupService {
         ChatGroupSearchResponse response = new ChatGroupSearchResponse();
         ChatGroup chatGroup = retrieveChatGroupById(chatGroupId).getChatGroup();
         if (Objects.nonNull(chatGroup)) {
-            chatGroupRepository.deleteById(chatGroupId);
-            response.setChatGroup(chatGroup);
-            response.setMessage(AppConstants.DELETE_CHAT_GROUP_SUCCESS_MSG);
-            response.setSuccess(true);
-        } else {
-            response.setMessage(AppConstants.DELETE_CHAT_GROUP_FAILURE_MSG);
-            response.setSuccess(false);
+            try {
+                chatGroupRepository.deleteById(chatGroupId);
+                response.setChatGroup(chatGroup);
+                response.setMessage(AppConstants.DELETE_CHAT_GROUP_SUCCESS_MSG);
+                response.setSuccess(true);
+            } catch (Exception e) {
+                response.setSuccess(false);
+                response.setMessage(AppConstants.DELETE_CHAT_GROUP_FAILURE_MSG + e.toString());
+            }
         }
 
         return response;

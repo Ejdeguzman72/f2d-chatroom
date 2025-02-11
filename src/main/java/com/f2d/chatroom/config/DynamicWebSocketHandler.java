@@ -30,14 +30,17 @@ public class DynamicWebSocketHandler {
     private F2DChatGroupService chatGroupService;
 
     @Autowired
-    private F2DChatMessageService chatMessageService;
+    private static F2DChatMessageService chatMessageService;
 
-    public Map<String, WebSocketHandler> channelHandlers = new ConcurrentHashMap<>();
+    public static Map<String, WebSocketHandler> channelHandlers = new ConcurrentHashMap<>();
 
     public Set<ChatGroup> retrieveChatGroupNames() {
         ChatGroupListResponse list;
         try {
             list = chatGroupService.retrieveAllChatGroupInfo();
+            for (ChatGroup x : list.getList()) {
+                logger.info(x.toString());
+            }
         } catch (Exception e) {
             logger.error("Failed to retrieve chat groups: {}", e.getMessage());
             return new HashSet<>();
@@ -54,6 +57,7 @@ public class DynamicWebSocketHandler {
     public void initializeHandlers() {
         Set<ChatGroup> set = retrieveChatGroupNames();
         for (ChatGroup cg : set) {
+            logger.info("Chat Group: " + cg);
             channelHandlers.put(cg.getGroupName(), new F2DWebSocketHandler(cg.getGroupName()));
         }
     }
@@ -68,55 +72,55 @@ public class DynamicWebSocketHandler {
         return channelHandlers.keySet();
     }
 
-    public class F2DWebSocketHandler extends TextWebSocketHandler {
+    public static class F2DWebSocketHandler extends TextWebSocketHandler {
         private String channel;
 
         public F2DWebSocketHandler(String channel) {
             this.channel = channel;
         }
 
-        @Override
-        public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-            URI uri = session.getUri();
-            this.channel = getChannelNameFromQueryParams(uri);
-            logger.info("Connection established on {}: {}", channel, session.getId());
-        }
+//        @Override
+//        public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+//            URI uri = session.getUri();
+//            this.channel = getChannelNameFromQueryParams(uri);
+//            logger.info("Connection established on {}: {}", channel, session.getId());
+//        }
 
         /**
          * Method to get channel name from query parameters or dynamically choose from available channels.
          */
-        private String getChannelNameFromQueryParams(URI uri) {
-            String query = uri.getQuery(); // e.g., channelName=myChannel
-            if (query == null || query.isEmpty()) {
-                logger.error("No query parameters found in the WebSocket URI");
-                return getFirstAvailableChannel(); // Fallback to first available channel
-            }
-
-            Map<String, String> queryParams = Arrays.stream(query.split("&"))
-                    .map(param -> param.split("="))
-                    .filter(paramArr -> paramArr.length == 2) // Ensure valid key-value pairs
-                    .collect(Collectors.toMap(p -> p[0], p -> p[1]));
-
-            String channelName = queryParams.get("channelName");
-
-            // If channelName is provided and valid, return it
-            if (channelName != null && channelHandlers.containsKey(channelName)) {
-                return channelName;
-            } else {
-                logger.error("Invalid or missing channelName in query parameters");
-                return getFirstAvailableChannel(); // Fallback to first available channel
-            }
-        }
-
-        // Helper method to get the first available channel from the channelHandlers map
-        private String getFirstAvailableChannel() {
-            if (!channelHandlers.isEmpty()) {
-                return channelHandlers.keySet().iterator().next(); // Return the first available channel
-            } else {
-                logger.error("No available channels found");
-                return "noChannel"; // Return an indication if no channels exist
-            }
-        }
+//        private String getChannelNameFromQueryParams(URI uri) {
+//            String query = uri.getQuery(); // e.g., channelName=myChannel
+//            if (query == null || query.isEmpty()) {
+//                logger.error("No query parameters found in the WebSocket URI");
+//                return getFirstAvailableChannel(); // Fallback to first available channel
+//            }
+//
+//            Map<String, String> queryParams = Arrays.stream(query.split("&"))
+//                    .map(param -> param.split("="))
+//                    .filter(paramArr -> paramArr.length == 2) // Ensure valid key-value pairs
+//                    .collect(Collectors.toMap(p -> p[0], p -> p[1]));
+//
+//            String channelName = queryParams.get("channelName");
+//
+//            // If channelName is provided and valid, return it
+//            if (channelName != null && channelHandlers.containsKey(channelName)) {
+//                return channelName;
+//            } else {
+//                logger.error("Invalid or missing channelName in query parameters");
+//                return getFirstAvailableChannel(); // Fallback to first available channel
+//            }
+//        }
+//
+//        // Helper method to get the first available channel from the channelHandlers map
+//        private String getFirstAvailableChannel() {
+//            if (!channelHandlers.isEmpty()) {
+//                return channelHandlers.keySet().iterator().next(); // Return the first available channel
+//            } else {
+//                logger.error("No available channels found");
+//                return "noChannel"; // Return an indication if no channels exist
+//            }
+//        }
 
         @Override
         protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
