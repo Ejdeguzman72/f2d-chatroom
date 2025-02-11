@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.UUID;
 
 @FeignClient(name = AppConstants.F2D_GROUP_BUILDER,
-        url = AppConstants.F2D_HOST,
+        url = AppConstants.LOCALHOST,
         configuration = FeignConfig.class,
         fallback = F2DGroupBuilderClientFallback.class)
 public interface F2DGroupBuilderFeignClient {
