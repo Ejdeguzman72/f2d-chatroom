@@ -14,6 +14,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/f2d-chat")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
+
+        // Native WebSocket support
+        registry.addEndpoint("/f2d-chat")
+                .setAllowedOriginPatterns("*"); // No SockJS
     }
 
     @Override
