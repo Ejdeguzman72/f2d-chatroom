@@ -12,10 +12,15 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        System.out.println("Received: " + message.getPayload());
+        // Parse the incoming JSON message to extract username and message
+        String messageContent = message.getPayload();
+        System.out.println("Received: " + messageContent);
 
-        // Echo the message back to the client
-        session.sendMessage(new TextMessage("Server: " + message.getPayload()));
+        // You may want to use a library to parse JSON, such as Jackson or Gson
+        // For simplicity, assuming the message is in the format: {"username": "user", "message": "text"}
+
+        // Echo the message with the username
+        session.sendMessage(new TextMessage(messageContent));
     }
 
     @Override
