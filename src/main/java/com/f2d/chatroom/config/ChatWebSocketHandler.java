@@ -32,11 +32,11 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws JsonProcessingException {
         System.out.println("Received message: " + message.getPayload());
 
-        ChatMessage chatMessage = objectMapper.readValue(message.getPayload(), ChatMessage.class);
-        chatMessage.setSentDatetime(LocalDateTime.now());
+//        ChatMessage chatMessage = objectMapper.readValue(message.getPayload(), ChatMessage.class);
+//        chatMessage.setSentDatetime(LocalDateTime.now());
 
-        chatMessageRepository.save(chatMessage);
-        LOGGER.info("Saving Message to database: " + chatMessage.toString());
+//        chatMessageRepository.save(chatMessage);
+//        LOGGER.info("Saving Message to database: " + chatMessage.toString());
 
         // Broadcast the message to all connected clients
         for (WebSocketSession s : sessions) {
