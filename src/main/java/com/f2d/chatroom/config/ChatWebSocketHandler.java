@@ -42,14 +42,6 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws JsonProcessingException {
         System.out.println("Received message: " + message.getPayload());
-        ChatGroup chatGroup = chatGroupService.retrieveChatGroupById(UUID.fromString("fc51b749-d510-46b5-8188-8e37f1ff4825")).getChatGroup();
-        ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setContent(message.getPayload());
-        chatMessage.setSentDatetime(LocalDateTime.now());
-        chatMessage.setChatGroup(chatGroup);
-
-        chatMessageRepository.save(chatMessage);
-        LOGGER.info("Saving Message to database: " + chatMessage.toString());
 
         // Broadcast the message to all connected clients
         for (WebSocketSession s : sessions) {
