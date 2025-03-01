@@ -17,7 +17,9 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -34,7 +36,12 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatWebSocketHandler.class);
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) {
+    public void afterConnectionEstablished(WebSocketSession session) throws IOException {
+        String token = extractJwtFromSession(session);
+        if (!isValidToken(token)) {
+            session.close();
+            return;
+        }
         sessions.add(session);
         System.out.println("New user connected: " + session.getId());
     }
@@ -59,5 +66,19 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, org.springframework.web.socket.CloseStatus status) {
         sessions.remove(session);
         System.out.println("User disconnected: " + session.getId());
+    }
+
+    private String extractJwtFromSession(WebSocketSession session) {
+        List<String> authorizationHeaders = session.getHandshakeHeaders().get("Authorization");
+
+        if (authorizationHeaders != null && !authorizationHeaders.isEmpty()) {
+            return authorizationHeaders.get(0).replace("Bearer ", "");
+        }
+        return null;
+    }
+
+    private boolean isValidToken(String token) {
+        // Validate token using JWT library
+        return token != null && token.length() > 10; // Example validation
     }
 }
