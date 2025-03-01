@@ -37,11 +37,6 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
-        String token = extractJwtFromSession(session);
-        if (!isValidToken(token)) {
-            session.close();
-            return;
-        }
         sessions.add(session);
         System.out.println("New user connected: " + session.getId());
     }
