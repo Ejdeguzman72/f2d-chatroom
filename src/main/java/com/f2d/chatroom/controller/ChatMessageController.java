@@ -54,4 +54,9 @@ public class ChatMessageController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping(UriConstants.RETRIEVE_USERNAME_FROM_TOKEN_URI)
+    public ResponseEntity<String> getUserInfo(@RequestHeader("X-User-Name") String username) {
+        // Use the username for your logic
+        return ResponseEntity.ok("Username: " + username);
+    }
 }
