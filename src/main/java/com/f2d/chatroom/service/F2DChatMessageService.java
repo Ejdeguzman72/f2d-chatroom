@@ -151,4 +151,8 @@ public class F2DChatMessageService {
 
         return response;
     }
+
+    public String getUsernameInfo(String username) {
+        return "Username: " + username;
+    }
 }

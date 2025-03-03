@@ -1,10 +1,5 @@
 package com.f2d.chatroom.config;
 
-import com.f2d.chatroom.domain.ChatGroup;
-import com.f2d.chatroom.domain.ChatMessage;
-import com.f2d.chatroom.domain.F2DGroupSearchResponse;
-import com.f2d.chatroom.feign.F2DGroupBuilderFeignClient;
-import com.f2d.chatroom.repository.F2DChatGroupRepository;
 import com.f2d.chatroom.repository.F2DChatMessageRepository;
 import com.f2d.chatroom.service.F2DChatGroupService;
 import com.f2d.chatroom.service.F2DChatMessageService;
@@ -18,10 +13,8 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class ChatWebSocketHandler extends TextWebSocketHandler {
