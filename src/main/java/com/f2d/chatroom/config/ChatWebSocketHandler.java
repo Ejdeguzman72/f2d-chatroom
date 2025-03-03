@@ -1,49 +1,66 @@
 package com.f2d.chatroom.config;
 
 import com.f2d.chatroom.repository.F2DChatMessageRepository;
-import com.f2d.chatroom.service.F2DChatGroupService;
-import com.f2d.chatroom.service.F2DChatMessageService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.util.List;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 public class ChatWebSocketHandler extends TextWebSocketHandler {
-    private static final Set<WebSocketSession> sessions = new CopyOnWriteArraySet<>();
-    private static final ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private F2DChatMessageRepository chatMessageRepository;
-    @Autowired
-    private F2DChatGroupService chatGroupService;
-    @Autowired
-    private F2DChatMessageService chatMessageService;
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChatWebSocketHandler.class);
+    private final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
+    private final String SECRET_KEY = "POOIRBCVIAUJERGKLBVSDLBVAKWIEWOIEOHGJKLBVLSBVLSADOWOIGHKLHGKLSDHJFKLSDFI"; // Change to your actual secret key
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
+        String token = extractTokenFromUri(session);
+        if (token == null) {
+            System.out.println("No token found in WebSocket URI.");
+            session.close();
+            return;
+        }
+
+        String username = extractUsernameFromToken(token);
+        if (username == null) {
+            System.out.println("Invalid token. Closing WebSocket session.");
+            session.close();
+            return;
+        }
+
+        System.out.println("User connected: " + username);
+        session.getAttributes().put("username", username);
         sessions.add(session);
-        System.out.println("New user connected: " + session.getId());
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws JsonProcessingException {
-        System.out.println("Received message: " + message.getPayload());
+        String username = (String) session.getAttributes().get("username");
+        if (username == null) {
+            System.out.println("No username associated with WebSocket session.");
+            return;
+        }
 
-        // Broadcast the message to all connected clients
+        String formattedMessage = "[" + username + "]: " + message.getPayload();
+        System.out.println("Broadcasting message: " + formattedMessage);
+
         for (WebSocketSession s : sessions) {
             if (s.isOpen()) {
                 try {
-                    s.sendMessage(new TextMessage(message.getPayload()));
-                } catch (Exception e) {
+                    s.sendMessage(new TextMessage(formattedMessage));
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -51,22 +68,37 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, org.springframework.web.socket.CloseStatus status) {
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         sessions.remove(session);
-        System.out.println("User disconnected: " + session.getId());
+        System.out.println("User disconnected.");
     }
 
-    private String extractJwtFromSession(WebSocketSession session) {
-        List<String> authorizationHeaders = session.getHandshakeHeaders().get("Authorization");
+    private String extractTokenFromUri(WebSocketSession session) {
+        URI uri = session.getUri();
+        if (uri == null) return null;
 
-        if (authorizationHeaders != null && !authorizationHeaders.isEmpty()) {
-            return authorizationHeaders.get(0).replace("Bearer ", "");
+        String query = uri.getQuery();
+        if (query == null || !query.contains("token=")) return null;
+
+        return query.split("token=")[1].split("&")[0]; // Extract token
+    }
+
+    private Key getSignKey() {
+        byte[] keyBytes = Base64.getDecoder().decode(SECRET_KEY);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    private String extractUsernameFromToken(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(getSignKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims.getSubject(); // Username
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return null;
-    }
-
-    private boolean isValidToken(String token) {
-        // Validate token using JWT library
-        return token != null && token.length() > 10; // Example validation
     }
 }
