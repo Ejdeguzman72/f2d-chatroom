@@ -48,6 +48,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws JsonProcessingException {
         String username = (String) session.getAttributes().get("username");
         if (username == null) {
+            sessions.remove(session);
             System.out.println("No username associated with WebSocket session.");
             return;
         }
