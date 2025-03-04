@@ -28,4 +28,5 @@ public class AppConstants {
     public static final String F2D_GROUP_BUILDER_CALL_FAILURE = "call to f2d-group-builder service failed";
     public static final String DUPLICATE_ENTRY = "Duplicate entry";
     public static final String USERS_TABLE_NAME = "users";
+    public static final String ROLE_TABLE_NAME = "role";
 }
