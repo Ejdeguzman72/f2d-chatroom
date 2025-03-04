@@ -23,11 +23,8 @@ public class AppConstants {
     public static final String F2D_HOST = "http://192.168.1.54:8081";
     public static final String F2D_HOST_API_GATEWAY = "http://192.168.1.54:9001";
     public static final String F2D_GROUP_BUILDER = "F2D-GROUP-BUILDER";
-    public static final String F2D_USER_AUTHENTICATION = "F2D-USER-AUTHENTICATION";
     public static final String F2D_MIDDLEWARE = "F2D-MIDDLEWARE";
     public static final String GROUP_ID = "groupId";
     public static final String F2D_GROUP_BUILDER_CALL_FAILURE = "call to f2d-group-builder service failed";
     public static final String DUPLICATE_ENTRY = "Duplicate entry";
-    public static final String USERS_TABLE_NAME = "users";
-    public static final String ROLE_TABLE_NAME = "role";
 }

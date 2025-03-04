@@ -1,9 +1,5 @@
 package com.f2d.chatroom.config;
 
-import com.f2d.chatroom.domain.ChatGroup;
-import com.f2d.chatroom.domain.ChatMessage;
-import com.f2d.chatroom.domain.F2DUser;
-import com.f2d.chatroom.feign.F2DUserAuthClient;
 import com.f2d.chatroom.repository.F2DChatMessageRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.jsonwebtoken.Claims;
@@ -16,7 +12,6 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.io.IOException;
 import java.net.URI;
 import java.security.Key;
-import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashSet;
@@ -25,8 +20,6 @@ import java.util.Set;
 public class ChatWebSocketHandler extends TextWebSocketHandler {
     @Autowired
     private F2DChatMessageRepository chatMessageRepository;
-    @Autowired
-    private F2DUserAuthClient userAuthClient;
     private final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
     private final String SECRET_KEY = "POOIRBCVIAUJERGKLBVSDLBVAKWIEWOIEOHGJKLBVLSBVLSADOWOIGHKLHGKLSDHJFKLSDFI"; // Change to your actual secret key
 
@@ -65,19 +58,6 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         for (WebSocketSession s : sessions) {
             if (s.isOpen()) {
                 try {
-//                    ChatMessage chatMessage = new ChatMessage();
-//                    String userInfo = userAuthClient.retrieveUserByUsername(username)
-//                            .getBody()
-//                            .getUser()
-//                            .getUsername();
-//                    ChatGroup chatGroup = new ChatGroup(
-//
-//                    );
-//
-//                    chatMessage.setContent(message.getPayload());
-//                    chatMessage.setSender(userInfo);
-//                    chatMessage.setSentDatetime(LocalDateTime.now());
-//                    chatMessage.setChatGroup();
                     s.sendMessage(new TextMessage(formattedMessage));
                 } catch (IOException e) {
                     e.printStackTrace();

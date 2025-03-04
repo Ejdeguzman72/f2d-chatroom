@@ -14,5 +14,4 @@ public class UriConstants {
     public static final String DELETE_CHAT_MESSAGE_URI = "/chatroom/chat-messages/delete/{chatMessageId}";
     public static final String GET_F2D_GROUP_BY_ID_RELATIVE_PATH = "/groups/search/id/{groupId}";
     public static final String RETRIEVE_USERNAME_FROM_TOKEN_URI = "/chatroom/retrieve-username";
-    public static final String GET_USER_BY_USERNAME = "/users/search/username/{username}";
 }
