@@ -29,23 +29,24 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
-//        String token = extractTokenFromUri(session);
-//        if (token == null) {
-//            System.out.println("No token found in WebSocket URI. Closing session.");
-//            session.close();
-//            return;
-//        }
-//
-//        String username = extractUsernameFromToken(token);
-//        if (username == null) {
-//            System.out.println("Invalid token. Closing WebSocket session.");
-//            session.close();
-//            return;
-//        }
-//
-//        System.out.println("User connected: " + username);
-//        session.getAttributes().put("username", username);
-//        sessions.add(session);
+        String token = extractTokenFromUri(session);
+        if (token == null) {
+            System.out.println("No token found in WebSocket URI. Closing session.");
+            session.close();
+            return;
+        }
+
+        String username = extractUsernameFromToken(token);
+        System.out.println("This is username - " + username);
+        if (username == null) {
+            System.out.println("Invalid token. Closing WebSocket session.");
+            session.close();
+            return;
+        }
+
+        System.out.println("User connected: " + username);
+        session.getAttributes().put("username", username);
+        sessions.add(session);
     }
 
     @Override
@@ -79,17 +80,19 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         return query.split("token=")[1].split("&")[0]; // Extract token
     }
 
-    private Key getSignKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+    private Key getSigningKey() {
+        byte[] keyBytes = Base64.getDecoder().decode(SECRET_KEY);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     private String extractUsernameFromToken(String token) {
         try {
             Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(getSignKey())
+                    .setSigningKey(getSigningKey())
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
+            System.out.println("Claims: "  + claims);
             return claims.getSubject(); // Username
         } catch (Exception e) {
             System.err.println("Token validation failed: " + e.getMessage());
