@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 @FeignClient(name = AppConstants.F2D_MIDDLEWARE,
-        url = AppConstants.F2D_HOST_API_GATEWAY,
+        url = AppConstants.LOCALHOST,
         configuration = FeignConfig.class,
         fallback = F2DGroupBuilderClientFallback.class)
 public interface MiddlewareFeignClient {
