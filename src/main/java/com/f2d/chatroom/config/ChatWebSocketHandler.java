@@ -25,23 +25,23 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
-        String token = extractTokenFromUri(session);
-        if (token == null) {
-            System.out.println("No token found in WebSocket URI.");
-            session.close();
-            return;
-        }
-
-        String username = extractUsernameFromToken(token);
-        if (username == null) {
-            System.out.println("Invalid token. Closing WebSocket session.");
-            session.close();
-            return;
-        }
-
-        System.out.println("User connected: " + username);
-        session.getAttributes().put("username", username);
-        sessions.add(session);
+//        String token = extractTokenFromUri(session);
+//        if (token == null) {
+//            System.out.println("No token found in WebSocket URI.");
+//            session.close();
+//            return;
+//        }
+//
+//        String username = extractUsernameFromToken(token);
+//        if (username == null) {
+//            System.out.println("Invalid token. Closing WebSocket session.");
+//            session.close();
+//            return;
+//        }
+//
+//        System.out.println("User connected: " + username);
+//        session.getAttributes().put("username", username);
+//        sessions.add(session);
     }
 
     @Override
