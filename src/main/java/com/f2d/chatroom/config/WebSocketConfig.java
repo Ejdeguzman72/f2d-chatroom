@@ -26,6 +26,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
     }
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new ChatWebSocketHandler(chatMessageRepository, chatGroupRepository, chatGroupService), "/f2d-chat").setAllowedOrigins("*");
+        registry.addHandler(new ChatWebSocketHandler(chatMessageRepository, chatGroupRepository, chatGroupService), "/chatroom/f2d-chat").setAllowedOrigins("*");
     }
 }
