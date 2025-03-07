@@ -13,6 +13,7 @@ import java.util.UUID;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
+@CrossOrigin
 public class ChatMessageController {
 
     @Autowired
