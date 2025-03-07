@@ -30,28 +30,8 @@ public class F2DChatGroupService {
             // Retrieve all ChatGroup entities from the repository
             List<ChatGroup> list = chatGroupRepository.findAll();
 
-            // Retrieve all valid ChatGroup entities, filtering out null values
-            List<ChatGroup> validChatGroupList = f2dGroupBuilderClient.retrieveAllGroups()
-                    .getBody()
-                    .getList()
-                    .stream()
-                    .map(F2DGroup::getChatGroup)
-                    .filter(Objects::nonNull)  // Filter out null ChatGroups
-                    .toList();
-
-            // Map the valid ChatGroup entities to their UUIDs, ensuring no nulls are present
-            List<UUID> validChatGroupIdList = validChatGroupList.stream()
-                    .map(ChatGroup::getChatGroupId)
-                    .filter(Objects::nonNull)  // Filter out null UUIDs
-                    .toList();
-
-            // Filter the list of ChatGroups from the repository, keeping only valid ones
-            List<ChatGroup> result = list.stream()
-                    .filter(group -> validChatGroupIdList.contains(group.getChatGroupId()))
-                    .toList();
-
             // Set the response with the valid ChatGroup list
-            response.setList(validChatGroupList);
+            response.setList(list);
             response.setMessage(AppConstants.GET_ALL_CHAT_GROUPS_SUCCESS_MSG);
             response.setSuccess(true);
         } catch (Exception e) {
@@ -101,7 +81,7 @@ public class F2DChatGroupService {
                 .toList();
         Set<String> set = new HashSet<>();
         for (String name : chatGroupNameList) {
-            if (chatGroupNameList.contains(name)) {
+            if (chatGroupNameList.contains(chatGroupName)) {
                 return true;
             }
         }
@@ -111,12 +91,8 @@ public class F2DChatGroupService {
 
     public ChatGroupAddUpdateResponse createChatGroup(ChatGroupAddUpdateRequest request) {
         ChatGroupAddUpdateResponse response = new ChatGroupAddUpdateResponse();
-
-
         try {
             ChatGroup chatGroup = new ChatGroup();
-
-            ChatGroup subimtChatGroup = new ChatGroup();
             if (checkForDuplicateChatGroupNames(request.getGroupName())) {
                 response.setMessage(AppConstants.DUPLICATE_ENTRY);
                 response.setSuccess(false);
@@ -125,12 +101,12 @@ public class F2DChatGroupService {
                 chatGroup.setGroupName(request.getGroupName());
                 chatGroup.setCreateDate(LocalDate.now());
                 chatGroup.setLastUpdateTime(LocalDate.now());
-                subimtChatGroup = chatGroupRepository.save(chatGroup);
+                chatGroupRepository.save(chatGroup);
             }
-                response.setChatGroup(subimtChatGroup);
-                response.setMessage(AppConstants.CREATE_CHAT_GROUP_SUCCESS_MSG);
-                response.setSuccess(true);
-                LOGGER.info("Successfully created chat group with ID: " + chatGroup.getGroupName());
+            response.setChatGroup(chatGroup);
+            response.setMessage(AppConstants.CREATE_CHAT_GROUP_SUCCESS_MSG);
+            response.setSuccess(true);
+            LOGGER.info("Successfully created chat group with ID: " + chatGroup.getGroupName());
         } catch (Exception e) {
             LOGGER.error("Error occurred while creating chat group: ", e);
             response.setSuccess(false);
@@ -185,8 +161,4 @@ public class F2DChatGroupService {
 
         return response;
     }
-
-//    public void deleteUnassociatedChatGroup(UUID f2dGroupId) {
-//        List<ChatGroup> f2dGroupIdList = f2dGroupBuilderClient.retrieveAllGroups().getBody().getList().stream().map(F2DGroup::getChatGroup).toList();
-//    }
 }
