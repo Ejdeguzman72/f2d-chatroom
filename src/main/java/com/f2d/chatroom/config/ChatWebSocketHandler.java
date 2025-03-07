@@ -1,5 +1,11 @@
 package com.f2d.chatroom.config;
 
+import com.f2d.chatroom.domain.AppConstants;
+import com.f2d.chatroom.domain.ChatGroup;
+import com.f2d.chatroom.domain.ChatMessage;
+import com.f2d.chatroom.domain.F2DGroup;
+import com.f2d.chatroom.feign.F2DGroupBuilderFeignClient;
+import com.f2d.chatroom.repository.F2DChatGroupRepository;
 import com.f2d.chatroom.repository.F2DChatMessageRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 //import io.jsonwebtoken.Claims;
@@ -16,6 +22,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,7 +30,8 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     @Autowired
     private F2DChatMessageRepository chatMessageRepository;
-
+    @Autowired
+    private F2DChatGroupRepository chatGroupRepository;
     private final Set<WebSocketSession> sessions = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private static final String SECRET_KEY = "POOIRBCVIAUJERGKLBVSDLBVAKWIEWOIEOHGJKLBVLSBVLSADOWOIGHKLHGKLSDHJFKLSDFI"; // Replace with a secure key
 
@@ -62,6 +70,14 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         System.out.println("Broadcasting message: " + formattedMessage);
 
         broadcastMessage(formattedMessage);
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setSender(username);
+        chatMessage.setContent(message.getPayload());
+        chatMessage.setSentDatetime(LocalDateTime.now());
+
+        ChatGroup chatGroup = chatGroupRepository.getReferenceById(UUID.fromString(AppConstants.F2D_CHAT_GROUP_ID));
+        chatMessage.setChatGroup(chatGroup);
+        chatMessageRepository.save(chatMessage);
     }
 
     @Override
