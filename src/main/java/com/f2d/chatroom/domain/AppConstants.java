@@ -1,5 +1,7 @@
 package com.f2d.chatroom.domain;
 
+import java.util.UUID;
+
 public class AppConstants {
     public static final String GET_ALL_CHAT_GROUPS_SUCCESS_MSG = "GET ALL CHAT GROUP INFORMATION SUCCESS";
     public static final String GET_ALL_CHAT_GROUPS_FAILURE_MSG = "GET ALL CHAT GROUP INFORMATION FAILURE";
@@ -28,5 +30,5 @@ public class AppConstants {
     public static final String F2D_GROUP_BUILDER_CALL_FAILURE = "call to f2d-group-builder service failed";
     public static final String DUPLICATE_ENTRY = "Duplicate entry";
     public static final String USERS_TABLE_NAME = "users";
-    public static final String F2D_CHAT_GROUP_ID = "2f7666f4-520a-4b16-8f07-147475a75df5";
+    public static final UUID F2D_CHAT_GROUP_ID = UUID.fromString("2f7666f4-520a-4b16-8f07-147475a75df5");
 }

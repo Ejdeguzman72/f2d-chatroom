@@ -7,6 +7,7 @@ import com.f2d.chatroom.domain.F2DGroup;
 import com.f2d.chatroom.feign.F2DGroupBuilderFeignClient;
 import com.f2d.chatroom.repository.F2DChatGroupRepository;
 import com.f2d.chatroom.repository.F2DChatMessageRepository;
+import com.f2d.chatroom.service.F2DChatGroupService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 //import io.jsonwebtoken.Claims;
 //import io.jsonwebtoken.Jwts;
@@ -14,7 +15,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
@@ -25,16 +29,29 @@ import java.security.Key;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
+@Component
 public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     @Autowired
     private F2DChatMessageRepository chatMessageRepository;
     @Autowired
     private F2DChatGroupRepository chatGroupRepository;
+    @Autowired
+    private F2DChatGroupService chatGroupService;
     private final Set<WebSocketSession> sessions = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private static final String SECRET_KEY = "POOIRBCVIAUJERGKLBVSDLBVAKWIEWOIEOHGJKLBVLSBVLSADOWOIGHKLHGKLSDHJFKLSDFI"; // Replace with a secure key
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChatWebSocketHandler.class);
 
+    @Autowired
+    public ChatWebSocketHandler(
+            F2DChatMessageRepository chatMessageRepository,
+            F2DChatGroupRepository chatGroupRepository,
+            F2DChatGroupService chatGroupService
+    ) {
+        this.chatMessageRepository = chatMessageRepository;
+        this.chatGroupRepository = chatGroupRepository;
+        this.chatGroupService = chatGroupService;
+    }
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
         String token = extractTokenFromUri(session);
@@ -75,9 +92,11 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         chatMessage.setContent(message.getPayload());
         chatMessage.setSentDatetime(LocalDateTime.now());
 
-        ChatGroup chatGroup = chatGroupRepository.getReferenceById(UUID.fromString(AppConstants.F2D_CHAT_GROUP_ID));
+        ChatGroup chatGroup = chatGroupRepository.findById(AppConstants.F2D_CHAT_GROUP_ID).orElseGet(ChatGroup::new);
         chatMessage.setChatGroup(chatGroup);
         chatMessageRepository.save(chatMessage);
+
+        LOGGER.info("Adding message: " + chatMessage);
     }
 
     @Override
